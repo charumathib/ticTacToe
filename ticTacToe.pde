@@ -17,6 +17,9 @@ public void setup() {
   size(600, 700);
   drawScreen();
   xoFont = loadFont("Damascus-72.vlw");
+  titleFont = loadFont("Damascus-48.vlw");
+
+  resetStates();
 }
 
 void drawScreen() { 
@@ -26,7 +29,6 @@ void drawScreen() {
   rect(0, 295, width, 10);
   rect(0, 495, width, 10);
 
-  titleFont = loadFont("Damascus-48.vlw");
   textFont(titleFont);
   textAlign(CENTER);
   text("TIC TAC TOE", 300, 75);
@@ -55,17 +57,59 @@ public boolean isGameOver(String xo) {
     sector147(xo) || sector258(xo) || sector359(xo) ||
     sector159(xo) || sector357(xo)) { 
 
-    if ( xo.equals(X)) { 
-      gameOverX = true ;
-    } else { 
-      gameOverO = true ;
-    }
+    flashWinner(xo);
 
+    // gameOverScreenXO(xo);
     println("Game Over");
+    gameOver = true ;
   }
-  gameOver = gameOverX || gameOverO ;
   return gameOver ;
 }
+
+void keyPressed() { 
+  if ( key == ENTER ) { 
+    fill(255, 255, 255);
+    drawScreen();
+    resetStates();
+  }
+}
+
+
+
+void flashWinner(String xo) {
+  if (sector123(xo)) { 
+    drawWinner(1, 2, 3, xo) ;
+  } else if ( sector456(xo)) { 
+    drawWinner(4, 5, 6, xo);
+  } else if ( sector789(xo)) { 
+    drawWinner(7, 8, 9, xo);
+  } else if ( sector147(xo)) { 
+    drawWinner(1, 4, 7, xo);
+  } else if ( sector359(xo)) { 
+    drawWinner(3, 5, 9, xo);
+  } else if ( sector159(xo)) { 
+    drawWinner(1, 5, 9, xo);
+  } else if ( sector258(xo)) { 
+    drawWinner(2, 5, 8, xo);
+  } else if ( sector357(xo)) { 
+    drawWinner(3, 5, 7, xo);
+  }
+}
+
+void drawWinner(int sector1, int sector2, int sector3, String xo) { 
+  Position p1 = new Position().getPositionGivenSectorNumber(sector1);
+  Position p2 = new Position().getPositionGivenSectorNumber(sector2);
+  Position p3 = new Position().getPositionGivenSectorNumber(sector3);
+  fill(44, 250, 30);
+  simplyDraw_XO(xo, p1.getX(), p1.getY());
+  simplyDraw_XO(xo, p2.getX(), p2.getY());
+  simplyDraw_XO(xo, p3.getX(), p3.getY());
+}
+
+void flash_O_Winner() {
+  // If X Wins, then flash the winning letters on that particular sector which got the win.
+}
+
 
 
 boolean sector123(String xo) { 
@@ -83,31 +127,39 @@ boolean sector456(String xo) {
 }
 boolean sector789(String xo) { 
   if ( xo.equals(X)) { 
-    return x_sect1 && x_sect2 && x_sect3 ;
+    return x_sect7 && x_sect8 && x_sect9 ;
   }
-  return o_sect1 && o_sect2 && o_sect3 ;
+  return o_sect7 && o_sect8 && o_sect9 ;
 }
 boolean sector147(String xo) { 
   if ( xo.equals(X)) { 
-    return x_sect1 && x_sect2 && x_sect3 ;
+    return x_sect1 && x_sect4 && x_sect7 ;
   }
-  return o_sect1 && o_sect2 && o_sect3 ;
+  return o_sect1 && o_sect4 && o_sect7 ;
 }
 boolean sector258(String xo) { 
-
-  return true ;
+  if ( xo.equals(X)) { 
+    return x_sect2 && x_sect5 && x_sect8 ;
+  }
+  return o_sect2 && o_sect5 && o_sect8 ;
 }
 boolean sector359(String xo) { 
-
-  return true ;
+  if ( xo.equals(X)) { 
+    return x_sect3 && x_sect5 && x_sect9 ;
+  }
+  return o_sect3 && o_sect5 && o_sect9 ;
 }
 boolean sector159(String xo) { 
-
-  return true ;
+  if ( xo.equals(X)) { 
+    return x_sect1 && x_sect5 && x_sect9 ;
+  }
+  return o_sect1 && o_sect5 && o_sect9 ;
 }
 boolean sector357(String xo) { 
-
-  return true ;
+  if ( xo.equals(X)) { 
+    return x_sect3 && x_sect5 && x_sect7 ;
+  }
+  return o_sect3 && o_sect5 && o_sect7 ;
 }
 
 
@@ -168,16 +220,20 @@ boolean isSector9() {
 
 
 public void draw_XO(String xo) {   
-  Position position = getPosition();
+  Position position = new Position().getPositionGivenMouseLocation();
+  simplyDraw_XO(xo, position.getX(), position.getY());
+}
+
+
+public void simplyDraw_XO(String xo, int x, int y) { 
   textFont(xoFont);
-  text(xo, position.getX(), position.getY());
+  text(xo, x, y);
   if ( xo.equals(X)) { 
     setSector_X_DrawnState(true);
   } else { 
     setSector_O_DrawnState(true);
   }
 }
-
 
 public boolean isDrawingPresent() { 
 
@@ -251,43 +307,6 @@ public void setSector_O_DrawnState(boolean state) {
   }
 }
 
-public Position getPosition() { 
-
-  int x = 0, y = 0;
-  if ( isSector1() ) { 
-    x = 100; 
-    y = 220;
-  } else if ( isSector2()) { 
-    x = 300 ; 
-    y = 220 ;
-  } else if ( isSector3()) { 
-    x = 500 ; 
-    y = 220 ;
-  } else if ( isSector4()) { 
-    x = 100 ; 
-    y = 420 ;
-  } else if ( isSector5()) { 
-    x = 300 ; 
-    y = 420 ;
-  } else if ( isSector6()) { 
-    x = 500 ; 
-    y = 420 ;
-  } else if ( isSector7()) { 
-    x = 100 ; 
-    y = 620 ;
-  } else if ( isSector8()) { 
-    x = 300 ; 
-    y = 620 ;
-  } else if ( isSector9()) { 
-    x = 500 ; 
-    y = 620 ;
-  } 
-
-
-  return new Position(x, y);
-}
-
-
 public void resetStates() { 
   x_sect1 = false ; 
   x_sect2 = false ; 
@@ -308,8 +327,16 @@ public void resetStates() {
   o_sect7 = false ; 
   o_sect8 = false ; 
   o_sect9 = false ; 
-  
+
   gameOverX = false ; 
   gameOverO = false ; 
   gameOver = false ;
+}
+public void gameOverScreenXO(String xo) {
+  titleFont = loadFont("Damascus-48.vlw");
+  textFont(titleFont);
+  background(0);
+  fill(255);
+  text("GAME OVER" + "... " + xo + " WINS!!!", 300, 350);
+  textAlign(CENTER);
 }
