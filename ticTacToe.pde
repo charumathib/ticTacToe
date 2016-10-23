@@ -105,7 +105,7 @@ void drawWinner(int sector1, int sector2, int sector3, String xo) {
 
   fill(0);
   rect(0, 0, 700, 100);
-  fill(44, 250, 30);
+  fill(255, 243, 3);
   textFont(titleFont);
   textAlign(CENTER);
   text("GAME OVER" + "... " + xo + " WINS!!!", 300, 75);
