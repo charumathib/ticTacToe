@@ -1,7 +1,6 @@
 PFont titleFont;
 PFont xoFont;
 boolean gameOver = false;
-boolean gameOverX, gameOverO ; 
 boolean shapesDrawn = false;
 boolean xo = false;
 boolean x_sect1, x_sect2, x_sect3, x_sect4, x_sect5, x_sect6, x_sect7, x_sect8, x_sect9;
@@ -23,6 +22,7 @@ public void setup() {
 
 void drawScreen() { 
   background(0);
+  fill(255, 255, 255);
   rect(195, 100, 10, height-100);
   rect(395, 100, 10, height-100);
   rect(0, 295, width, 10);
@@ -67,7 +67,6 @@ public boolean isGameOver(String xo) {
 
 void keyPressed() { 
   if ( key == ENTER ) { 
-    fill(255, 255, 255);
     drawScreen();
     resetStates();
   }
@@ -103,14 +102,18 @@ void drawWinner(int sector1, int sector2, int sector3, String xo) {
   simplyDraw_XO(xo, p1.getX(), p1.getY());
   simplyDraw_XO(xo, p2.getX(), p2.getY());
   simplyDraw_XO(xo, p3.getX(), p3.getY());
+
+  fill(0);
+  rect(0, 0, 700, 100);
+  fill(44, 250, 30);
+  textFont(titleFont);
+  textAlign(CENTER);
+  text("GAME OVER" + "... " + xo + " WINS!!!", 300, 75);
 }
 
-void flash_O_Winner() {
-  // If X Wins, then flash the winning letters on that particular sector which got the win.
-}
 
 
-
+// Checks to see if either "X" or "O" has taken up the sector 123. If so then it returns TRUE, else FALSE
 boolean sector123(String xo) { 
   if ( xo.equals(X)) { 
     return x_sect1 && x_sect2 && x_sect3 ;
@@ -162,7 +165,7 @@ boolean sector357(String xo) {
 }
 
 
-
+// Returns TRUE when the mouse is in a Sector
 boolean isSector1() { 
   x = mouseX;
   y = mouseY;  
@@ -217,23 +220,23 @@ boolean isSector9() {
   return (x <= width &&  x>=405 && y>=505 && y<=height);
 }
 
-
+// When "X" or "O" is passed to this method for drawing them on the screen, 
+// First a check is made with helper method getPositionGivenMouseLocation to obtain the "x" and "y" coordinates
+// Then make a call to draw "X" or "O".
 public void draw_XO(String xo) {   
   Position position = new Position().getPositionGivenMouseLocation();
   simplyDraw_XO(xo, position.getX(), position.getY());
 }
 
-
+// Draw at the given position either "X" or "O" and update the respective sector's boolean to true.
 public void simplyDraw_XO(String xo, int x, int y) { 
   textFont(xoFont);
   text(xo, x, y);
-  if ( xo.equals(X)) { 
-    setSector_X_DrawnState(true);
-  } else { 
-    setSector_O_DrawnState(true);
-  }
+  setSectorDrawnState(xo);
 }
 
+// Checks to see if a sector has been already drawn. We know this by checking to see the boolean for that particular sector
+// for either "X" or "O". If they are set, then that particular sector is considered "drawing present"
 public boolean isDrawingPresent() { 
 
   boolean returnState = false ; 
@@ -256,53 +259,40 @@ public boolean isDrawingPresent() {
   } else if ( isSector9()) { 
     returnState = x_sect9 || o_sect9 ;
   }
-
-
   return returnState ;
 }
 
-// Find the position and set the state of the variable for that sector
-public void setSector_X_DrawnState(boolean state) { 
+// Find the position and set the state of the boolean for that sector
+// If the passed variable xo = "X" and if the sector1 is true, then the statement 
+// x_sect1 = "X".equals(X) will be true ;
+public void setSectorDrawnState(String xo) { 
   if ( isSector1() ) { 
-    x_sect1 = state ;
+    x_sect1 = xo.equals(X);
+    o_sect1 = xo.equals(O);
   } else if ( isSector2()) { 
-    x_sect2 = state ;
+    x_sect2 = xo.equals(X);
+    o_sect2 = xo.equals(O);
   } else if ( isSector3()) { 
-    x_sect3 = state ;
+    x_sect3 = xo.equals(X);
+    o_sect3 = xo.equals(O);
   } else if ( isSector4()) { 
-    x_sect4 = state ;
+    x_sect4 = xo.equals(X);
+    o_sect4 = xo.equals(O);
   } else if ( isSector5()) { 
-    x_sect5 = state ;
+    x_sect5 = xo.equals(X);
+    o_sect5 = xo.equals(O);
   } else if ( isSector6()) { 
-    x_sect6 = state ;
+    x_sect6 = xo.equals(X);
+    o_sect6 = xo.equals(O);
   } else if ( isSector7()) { 
-    x_sect7 = state ;
+    x_sect7 = xo.equals(X);
+    o_sect7 = xo.equals(O);
   } else if ( isSector8()) { 
-    x_sect8 = state ;
+    x_sect8 = xo.equals(X);
+    o_sect8 = xo.equals(O);
   } else if ( isSector9()) { 
-    x_sect9 = state ;
-  }
-}
-
-public void setSector_O_DrawnState(boolean state) { 
-  if ( isSector1() ) { 
-    o_sect1 = state ;
-  } else if ( isSector2()) { 
-    o_sect2 = state ;
-  } else if ( isSector3()) { 
-    o_sect3 = state ;
-  } else if ( isSector4()) { 
-    o_sect4 = state ;
-  } else if ( isSector5()) { 
-    o_sect5 = state ;
-  } else if ( isSector6()) { 
-    o_sect6 = state ;
-  } else if ( isSector7()) { 
-    o_sect7 = state ;
-  } else if ( isSector8()) { 
-    o_sect8 = state ;
-  } else if ( isSector9()) { 
-    o_sect9 = state ;
+    x_sect9 = xo.equals(X);
+    o_sect9 = xo.equals(O);
   }
 }
 
@@ -327,15 +317,5 @@ public void resetStates() {
   o_sect8 = false ; 
   o_sect9 = false ; 
 
-  gameOverX = false ; 
-  gameOverO = false ; 
   gameOver = false ;
-}
-public void gameOverScreenXO(String xo) {
-  titleFont = loadFont("Damascus-48.vlw");
-  textFont(titleFont);
-  background(0);
-  fill(255);
-  text("GAME OVER" + "... " + xo + " WINS!!!", 300, 350);
-  textAlign(CENTER);
 }
