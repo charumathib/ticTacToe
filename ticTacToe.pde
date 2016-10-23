@@ -15,10 +15,9 @@ float x, y;
 
 public void setup() {
   size(600, 700);
-  drawScreen();
   xoFont = loadFont("Damascus-72.vlw");
   titleFont = loadFont("Damascus-48.vlw");
-
+  drawScreen();
   resetStates();
 }
 
